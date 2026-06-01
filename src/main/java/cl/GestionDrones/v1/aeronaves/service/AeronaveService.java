@@ -1,5 +1,6 @@
 package cl.GestionDrones.v1.aeronaves.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,18 @@ public class AeronaveService {
 
     public List<Aeronave> obtenerPorEmpresaProveedora(Long idEmpresaProveedora) {
         return aeronaveRepository.selectPorEmpresaProveedora(idEmpresaProveedora);
+    }
+
+    public List<Aeronave> getAeronavesConSeguroPorVencer() {
+
+    LocalDate hoy = LocalDate.now();
+    LocalDate fechaLimite = hoy.plusDays(10);
+
+    return aeronaveRepository
+            .findAll()
+            .stream()
+            .filter(a -> !a.getFechaVencimientoSeguro().isBefore(hoy))
+            .filter(a -> !a.getFechaVencimientoSeguro().isAfter(fechaLimite))
+            .toList();
     }
 }

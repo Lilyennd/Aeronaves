@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import cl.GestionDrones.v1.aeronaves.model.Aeronave;
 import org.springframework.data.jpa.repository.Query;
+
 import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -25,4 +28,8 @@ public interface AeronaveRepository extends JpaRepository<Aeronave, Long> {
     default int totalAeronaves() {
         return (int) this.count(); 
     }
+
+    List<Aeronave> findByFechaVencimientoSeguroLessThanEqual(
+            LocalDate fechaLimite
+    );
 }

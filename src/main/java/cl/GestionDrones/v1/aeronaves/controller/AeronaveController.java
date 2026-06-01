@@ -1,6 +1,8 @@
 package cl.GestionDrones.v1.aeronaves.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -163,4 +165,25 @@ public class AeronaveController {
                 
                 return ResponseEntity.ok(aeronaves);
         }
+                @GetMapping("/seguros/por-vencer")
+        public ResponseEntity<?> getAeronavesConSeguroPorVencer() {
+
+        List<Aeronave> aeronaves =
+                aeronaveService.getAeronavesConSeguroPorVencer();
+
+        if (aeronaves.isEmpty()) {
+
+                Map<String, String> respuesta = new HashMap<>();
+
+                respuesta.put(
+                        "mensaje",
+                        "No existen aeronaves con seguro próximo a vencer"
+                );
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(respuesta);
+        }
+
+        return ResponseEntity.ok(aeronaves);
+}
 }

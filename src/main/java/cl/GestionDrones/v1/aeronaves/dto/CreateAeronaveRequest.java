@@ -24,8 +24,8 @@ public record CreateAeronaveRequest(
         @NotBlank(message = "El modelo no puede ser vacío") 
         String modelo,
 
-        @NotBlank(message = "El estado inicial no puede ser vacío") 
-        String estado, 
+        @NotBlank(message = "El estado inicial no puede ser vacío")
+        String estado,
 
         @NotNull(message = "La fecha de vencimiento del seguro es obligatoria")
         

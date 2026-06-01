@@ -165,6 +165,7 @@ public class AeronaveController {
                 
                 return ResponseEntity.ok(aeronaves);
         }
+        //asd
                 @GetMapping("/seguros/por-vencer")
         public ResponseEntity<?> getAeronavesConSeguroPorVencer() {
 

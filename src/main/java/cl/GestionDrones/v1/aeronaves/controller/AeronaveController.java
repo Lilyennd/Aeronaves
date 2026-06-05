@@ -122,18 +122,21 @@ public class AeronaveController {
         }
 
         @GetMapping("/patente/{patente}")
-        public ResponseEntity<List<Aeronave>> selectPorPatente(@PathVariable String patente) {
+        public ResponseEntity<?> selectPorPatente(@PathVariable String patente) {
                 if (patente == null || patente.trim().isEmpty()) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Patente inválida");
                 }
 
-                List<Aeronave> aeronaves = aeronaveService.obtenerPorPatente(patente);
-                
-                if (aeronaves.isEmpty()) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(aeronaves);
-                }
-                
-                return ResponseEntity.ok(aeronaves);
+        List<Aeronave> aeronaves = aeronaveService.obtenerPorPatente(patente);
+        
+        if (aeronaves.isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "No encontrado");
+                error.put("mensaje", "No existe aeronave con patente: " + patente);
+                return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+        
+        return ResponseEntity.ok(aeronaves.get(0));
         }
 
         @GetMapping("/numeroSerie/{numeroSerie}")

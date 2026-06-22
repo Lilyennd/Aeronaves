@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +22,9 @@ import cl.GestionDrones.v1.aeronaves.service.AeronaveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,6 +60,18 @@ public class AeronaveController {
         }
 
         @Operation(summary = "Crear una nueva aeronave", description = "Registra una nueva aeronave en el sistema previa validación de sus datos")
+        @RequestBody(
+            description = "Estructura JSON con los datos de la nueva aeronave a registrar",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = CreateAeronaveRequest.class),
+                examples = @ExampleObject(
+                    name = "Ejemplo de Nueva Aeronave",
+                    value = "{\n  \"idEmpresaProveedora\": 45,\n  \"patente\": \"DRON-99X-CL\",\n  \"numeroSerie\": \"SN-554203-A9\",\n  \"marca\": \"DJI\",\n  \"modelo\": \"Matrice 300 RTK\",\n  \"estado\": \"OPERATIVO\",\n  \"fechaVencimientoSeguro\": \"2027-12-31\"\n}"
+                )
+            )
+        )
         @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Aeronave creada exitosamente", 
                          content = @Content(mediaType = "application/json", schema = @Schema(implementation = Aeronave.class))),
@@ -66,7 +79,7 @@ public class AeronaveController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
         })
         @PostMapping
-        public ResponseEntity<Aeronave> agregarAeronave(@Valid @RequestBody CreateAeronaveRequest request) {
+        public ResponseEntity<Aeronave> agregarAeronave(@Valid @org.springframework.web.bind.annotation.RequestBody CreateAeronaveRequest request) {
                 
                 if (request.patente() == null || request.patente().trim().isEmpty()) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -111,6 +124,18 @@ public class AeronaveController {
         }
 
         @Operation(summary = "Actualizar una aeronave", description = "Modifica los datos de una aeronave existente a partir de su ID")
+        @RequestBody(
+            description = "Estructura JSON con los campos de la aeronave que se desean modificar",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UpdateAeronaveRequest.class),
+                examples = @ExampleObject(
+                    name = "Ejemplo de Actualización de Aeronave",
+                    value = "{\n  \"idEmpresaProveedora\": 45,\n  \"patente\": \"DRON-99X-MOD\",\n  \"numeroSerie\": \"SN-554203-A9\",\n  \"marca\": \"DJI\",\n  \"modelo\": \"Matrice 350 RTK\",\n  \"estado\": \"EN_MANTENCION\",\n  \"fechaVencimientoSeguro\": \"2028-06-15\"\n}"
+                )
+            )
+        )
         @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Aeronave actualizada de manera exitosa", 
                          content = @Content(mediaType = "application/json", schema = @Schema(implementation = Aeronave.class))),
@@ -121,7 +146,7 @@ public class AeronaveController {
         public ResponseEntity<Aeronave> actualizarAeronave(
             @Parameter(description = "ID de la aeronave que se desea actualizar", required = true, example = "1") 
             @PathVariable Long id,
-            @Valid @RequestBody UpdateAeronaveRequest request
+            @Valid @org.springframework.web.bind.annotation.RequestBody UpdateAeronaveRequest request
         ) {
                 
                 if (id <= 0) {
@@ -143,7 +168,7 @@ public class AeronaveController {
 
         @Operation(summary = "Eliminar una aeronave", description = "Elimina físicamente una aeronave del inventario por su ID")
         @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Aeronave eliminada de forma exitosa"),
+            @ApiResponse(responseCode = "204", description = "Aeronave Talkeada/eliminada de forma exitosa"),
             @ApiResponse(responseCode = "400", description = "ID proporcionado es inválido", content = @Content)
         })
         @DeleteMapping("/{id}")

@@ -1,10 +1,12 @@
 package cl.GestionDrones.v1.aeronaves.exception;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,23 +22,21 @@ public class GlobalExceptionHandler {
     }
 
     
-    @ExceptionHandler(SeguroInvalidoException.class)
-    public ProblemDetail handleSeguroInvalido(SeguroInvalidoException ex) {
+@ExceptionHandler(SeguroInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> handleSeguroInvalido(SeguroInvalidoException ex) {
         System.out.println("🔴 GlobalExceptionHandler EJECUTADO - Violación de seguro aeronáutico: " + ex.getMessage());
 
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("title", "Seguro Aeronáutico Inválido o Vencido");
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("detail", ex.getMessage());
+        errorResponse.put("timestamp", Instant.now().toString());
+        errorResponse.put("codigo_error", "DGAC-ERR-SEGURO");
         
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.UNPROCESSABLE_ENTITY, 
-                ex.getMessage()
-        );
-
-        problem.setTitle("Seguro Aeronáutico Inválido o Vencido");
-        problem.setProperty("timestamp", Instant.now());
-        problem.setProperty("codigo_error", "DGAC-ERR-SEGURO");
-        
-        return problem;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
     }
-
 
     @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
     public ProblemDetail handleEntityNotFound(jakarta.persistence.EntityNotFoundException ex) {

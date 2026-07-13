@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import cl.GestionDrones.v1.aeronaves.client.EmpresasProveedorasClient;
+import cl.GestionDrones.v1.aeronaves.exception.ResourceNotFoundException;
 import cl.GestionDrones.v1.aeronaves.model.Aeronave;
 import cl.GestionDrones.v1.aeronaves.repository.AeronaveRepository;
 
@@ -15,11 +17,18 @@ public class AeronaveService {
     @Autowired
     private AeronaveRepository aeronaveRepository;
 
+    @Autowired
+    private EmpresasProveedorasClient empresasProveedorasClient;
+
     public List<Aeronave> getAeronaves() {
         return aeronaveRepository.findAll();
     }
 
     public Aeronave saveAeronave(Aeronave aeronave) {
+        if (!empresasProveedorasClient.existeEmpresaProveedora(aeronave.getIdEmpresaProveedora())) {
+            throw new ResourceNotFoundException(
+                "La empresa proveedora con ID " + aeronave.getIdEmpresaProveedora() + " no existe.");
+        }
         return aeronaveRepository.save(aeronave);
     }
 
